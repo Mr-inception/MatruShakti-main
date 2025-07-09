@@ -9,7 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import Navbar from '@/components/Layout/Navbar';
-import Footer from '@/components/Layout/Footer';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -63,10 +62,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/National_Nutrition_Month_SuPoshan_Sangini_3.jpg)' }}>
       <Navbar />
-      <main className="flex-grow flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md">
+      <main className="flex-grow flex items-center justify-center py-12 px-4 bg-white/80 backdrop-blur-sm">
+        <div className="w-full max-w-md bg-white/90 rounded-xl shadow-lg p-6">
           <Card className="shadow-lg border-matru-primary/20">
             <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
@@ -158,7 +157,6 @@ const Login = () => {
           </Card>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

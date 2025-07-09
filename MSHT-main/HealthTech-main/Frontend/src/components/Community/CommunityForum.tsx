@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Heart, User, Calendar } from 'lucide-react';
+import GroupChat from './GroupChat';
 
 // Sample forum posts
 const initialPosts = [
@@ -222,6 +223,7 @@ const CommunityForum = () => {
           {renderPosts(filteredPosts, handleLikePost)}
         </TabsContent>
       </Tabs>
+      <GroupChat />
     </div>
   );
 };

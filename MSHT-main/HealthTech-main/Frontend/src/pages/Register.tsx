@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
 import Navbar from '@/components/Layout/Navbar';
-import Footer from '@/components/Layout/Footer';
+// import Footer from '@/components/Layout/Footer';
 import { Eye, EyeOff, Mail, User, Phone, UserCircle, Heart, Stethoscope } from 'lucide-react';
 
 const userTypes = {
@@ -108,11 +108,11 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-contain bg-center bg-no-repeat" style={{ backgroundImage: 'url(/37-1602x1068.jpg)' }}>
       <Navbar />
       
-      <main className="flex-grow flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md">
+      <main className="flex-grow flex items-center justify-center py-12 px-4 bg-white/80 backdrop-blur-sm">
+        <div className="w-full max-w-md bg-white/90 rounded-xl shadow-lg p-6">
           <Card className="shadow-lg border-matru-primary/20">
             <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl font-bold">Join MatruShakti</CardTitle>
@@ -340,7 +340,7 @@ const Register = () => {
         </div>
       </main>
       
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

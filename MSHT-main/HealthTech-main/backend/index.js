@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = express();
@@ -53,6 +55,14 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema);
 
+// Message schema and model for chat
+const messageSchema = new mongoose.Schema({
+  sender: String, // You can use userId or email
+  content: String,
+  timestamp: { type: Date, default: Date.now }
+});
+const Message = mongoose.model('Message', messageSchema);
+
 // Get all posts
 app.get('/posts', async (req, res) => {
   const posts = await Post.find().sort({ _id: -1 });
@@ -92,5 +102,33 @@ app.post('/login', async (req, res) => {
   res.json({ token, user: { email: user.email, fullName: user.fullName, userType: user.userType, profileDescription: user.profileDescription } });
 });
 
+// REST endpoint to get chat history
+app.get('/chat/history', async (req, res) => {
+  try {
+    const messages = await Message.find().sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch chat history' });
+  }
+});
+
+// Create HTTP server and Socket.IO instance
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+io.on('connection', (socket) => {
+  // Listen for new chat messages
+  socket.on('chat message', async (msg) => {
+    const message = new Message({ sender: msg.sender, content: msg.content });
+    await message.save();
+    io.emit('chat message', message); // Broadcast to all clients
+  });
+});
+
 const PORT = 4000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Backend running on port ${PORT}`));
