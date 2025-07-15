@@ -13,15 +13,61 @@ import HealthAssistant from '@/components/AI/HealthAssistant';
 const Index = () => {
   const [user, setUser] = useState(null);
   const [showChat, setShowChat] = useState(false);
+  // Streak state
+  const [tasks, setTasks] = useState([]);
+  const [loadingStreak, setLoadingStreak] = useState(true);
+  const [streakError, setStreakError] = useState(null);
+
   useEffect(() => {
     const stored = localStorage.getItem('matruUser');
     if (stored) setUser(JSON.parse(stored));
   }, []);
+
+  // Fetch tasks for streaks
+  useEffect(() => {
+    fetch('/api/tasks/today')
+      .then(res => res.json())
+      .then(data => {
+        setTasks(data.tasks || []);
+        setLoadingStreak(false);
+      })
+      .catch(() => {
+        setStreakError('Failed to load streak info.');
+        setLoadingStreak(false);
+      });
+  }, []);
+
+  // Calculate streaks
+  const currentStreak = tasks.length > 0 ? Math.max(...tasks.map(t => t.currentStreak || 0)) : 0;
+  const bestStreak = tasks.length > 0 ? Math.max(...tasks.map(t => t.highestStreak || 0)) : 0;
+
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-grow">
         <HeroSection />
+        {/* Streak summary card */}
+        <div className="container mx-auto px-4 mt-8">
+          <div className="max-w-md mx-auto">
+            <div className="bg-pink-50 rounded-lg shadow-md p-6 flex items-center justify-between">
+              <div>
+                <div className="text-pink-700 font-semibold text-lg mb-1">Your Wellness Streak</div>
+                {loadingStreak ? (
+                  <div className="text-gray-500 text-sm">Loading streak...</div>
+                ) : streakError ? (
+                  <div className="text-red-500 text-sm">{streakError}</div>
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold text-pink-900">{currentStreak} day{currentStreak === 1 ? '' : 's'}</div>
+                    <div className="text-xs text-pink-400">Best: {bestStreak} day{bestStreak === 1 ? '' : 's'}</div>
+                  </>
+                )}
+              </div>
+              <Heart className="h-10 w-10 text-pink-400 animate-pulse" />
+            </div>
+          </div>
+        </div>
+        {/* End streak summary card */}
         <FeatureSection />
         
         {/* Government Schemes Section */}
