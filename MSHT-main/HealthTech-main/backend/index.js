@@ -8,7 +8,11 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://matru-shakti-main-frontend.vercel.app', // replace with your actual frontend URL if different
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Register health assistant routes
