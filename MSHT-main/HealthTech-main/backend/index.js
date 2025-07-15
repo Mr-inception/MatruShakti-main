@@ -36,24 +36,8 @@ const postSchema = new mongoose.Schema({
 
 const Post = mongoose.model('Post', postSchema);
 
-// User schema and model
-const userSchema = new mongoose.Schema({
-  fullName: String,
-  email: { type: String, unique: true },
-  phone: String,
-  password: String,
-  userType: String,
-  profileDescription: String,
-});
-
-// Hash password before saving user
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-const User = mongoose.model('User', userSchema);
+// Use imported User model from './User'
+const User = require('./User');
 
 // Message schema and model for chat
 const messageSchema = new mongoose.Schema({
@@ -109,6 +93,69 @@ app.get('/chat/history', async (req, res) => {
     res.json(messages);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch chat history' });
+  }
+});
+
+// Import Task and User models
+const Task = require('./Task');
+// const UserModel = require('./User'); // This line is no longer needed
+
+// --- Streak Tracker Endpoints ---
+
+// Helper: get start of today
+function getToday() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now;
+}
+
+// GET /api/tasks/today - Get today's tasks for a user
+app.get('/api/tasks/today', async (req, res) => {
+  // TODO: Replace with real user ID from auth
+  const userId = req.query.userId || '663b1e1f1f1f1f1f1f1f1f1f'; // placeholder
+  const today = getToday();
+  try {
+    // Find all tasks for today
+    const tasks = await Task.find({ userId, date: today });
+    res.json({ tasks });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch today\'s tasks' });
+  }
+});
+
+// POST /api/tasks/:id/complete - Mark a task as complete and update streaks
+app.post('/api/tasks/:id/complete', async (req, res) => {
+  const taskId = req.params.id;
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+    if (task.completed) return res.json(task); // Already completed
+
+    // Mark as complete
+    task.completed = true;
+
+    // Streak logic
+    // Find yesterday's task of same type
+    const yesterday = new Date(task.date);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const prevTask = await Task.findOne({
+      userId: task.userId,
+      type: task.type,
+      date: yesterday
+    });
+    if (prevTask && prevTask.completed) {
+      task.currentStreak = (prevTask.currentStreak || 0) + 1;
+    } else {
+      task.currentStreak = 1;
+    }
+    if (task.currentStreak > (task.highestStreak || 0)) {
+      task.highestStreak = task.currentStreak;
+    }
+    await task.save();
+    res.json(task);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to complete task' });
   }
 });
 
