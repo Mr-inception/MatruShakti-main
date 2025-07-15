@@ -22,7 +22,8 @@ const HealthAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/health-assistant', {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${API_BASE}/api/health-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

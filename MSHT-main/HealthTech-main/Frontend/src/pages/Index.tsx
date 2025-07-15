@@ -23,9 +23,11 @@ const Index = () => {
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   // Fetch tasks for streaks
   useEffect(() => {
-    fetch('/api/tasks/today')
+    fetch(`${API_BASE}/api/tasks/today`)
       .then(res => res.json())
       .then(data => {
         setTasks(data.tasks || []);

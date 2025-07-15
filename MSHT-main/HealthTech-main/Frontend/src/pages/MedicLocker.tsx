@@ -50,7 +50,7 @@ const MedicLocker = () => {
   });
   const { toast } = useToast();
 
-  const API_BASE = 'http://localhost:4000';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const stored = localStorage.getItem('matruUser');

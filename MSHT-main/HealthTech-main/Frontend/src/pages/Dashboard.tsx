@@ -14,8 +14,10 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
-    fetch('/api/tasks/today')
+    fetch(`${API_BASE}/api/tasks/today`)
       .then(res => res.json())
       .then(data => {
         setTasks(data.tasks);
@@ -29,7 +31,7 @@ const Dashboard: React.FC = () => {
 
   const handleComplete = async (taskId: string) => {
     try {
-      const res = await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/tasks/${taskId}/complete`, { method: 'POST' });
       const updatedTask = await res.json();
       setTasks(tasks =>
         tasks.map(t => (t._id === updatedTask._id ? updatedTask : t))

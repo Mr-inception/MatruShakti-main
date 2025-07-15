@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const BACKEND_URL = 'http://192.168.29.51:4000';
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
   _id?: string;
